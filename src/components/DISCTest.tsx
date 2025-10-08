@@ -22,6 +22,16 @@ interface DISCTestProps {
   onComplete: (responses: any[]) => void
 }
 
+// Função para embaralhar array (Fisher-Yates shuffle)
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
+
 export default function DISCTest({ questions, onComplete }: DISCTestProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [responses, setResponses] = useState<any[]>([])
@@ -36,15 +46,27 @@ export default function DISCTest({ questions, onComplete }: DISCTestProps) {
   const currentQ = limitedQuestions[currentQuestion]
   const progress = ((currentQuestion + 1) / limitedQuestions.length) * 100
 
-  // Opções de múltipla escolha A, B, C, D
+  // Opções de múltipla escolha A, B, C, D com randomização
   const multipleChoiceOptions = useMemo(() => {
     if (!currentQ) return []
-    return [
-      { key: 'A', trait: 'D', text: currentQ.option_d },
-      { key: 'B', trait: 'I', text: currentQ.option_i },
-      { key: 'C', trait: 'S', text: currentQ.option_s },
-      { key: 'D', trait: 'C', text: currentQ.option_c }
+    
+    // Criar array base com as opções
+    const baseOptions = [
+      { trait: 'D', text: currentQ.option_d },
+      { trait: 'I', text: currentQ.option_i },
+      { trait: 'S', text: currentQ.option_s },
+      { trait: 'C', text: currentQ.option_c }
     ]
+    
+    // Embaralhar as opções para cada questão
+    const shuffledOptions = shuffleArray(baseOptions)
+    
+    // Mapear para A, B, C, D após embaralhar
+    return shuffledOptions.map((option, index) => ({
+      key: ['A', 'B', 'C', 'D'][index],
+      trait: option.trait,
+      text: option.text
+    }))
   }, [currentQ])
 
   const handleNext = () => {
@@ -151,6 +173,7 @@ export default function DISCTest({ questions, onComplete }: DISCTestProps) {
             <p className="font-medium">💡 Instruções:</p>
             <p>Para cada situação, escolha a opção (A, B, C ou D) que melhor descreve seu comportamento natural.</p>
             <p>Responda de forma instintiva - sua primeira impressão é geralmente a mais precisa.</p>
+            <p className="text-blue-600 font-medium">✨ As opções são apresentadas em ordem aleatória para maior precisão do resultado.</p>
           </div>
         </CardContent>
       </Card>

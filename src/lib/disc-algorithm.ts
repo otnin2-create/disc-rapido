@@ -76,16 +76,20 @@ function generatePersonalizedFeedback(primary: 'D' | 'I' | 'S' | 'C', secondary:
         'Foco intenso em resultados e objetivos',
         'Coragem para enfrentar desafios e assumir riscos',
         'Capacidade de motivar outros através do exemplo',
-        'Eficiência em situações de pressão'
+        'Eficiência em situações de pressão',
+        'Assertividade em relacionamentos profissionais',
+        'Capacidade de estabelecer limites claros'
       ],
       areas_desenvolver: [
         'Desenvolver mais paciência com processos longos',
         'Melhorar a escuta ativa e consideração de outras opiniões',
         'Trabalhar a diplomacia na comunicação',
         'Aprender a delegar com mais confiança',
-        'Desenvolver maior sensibilidade emocional'
+        'Desenvolver maior sensibilidade emocional',
+        'Melhorar habilidades de relacionamento interpessoal',
+        'Praticar mais empatia em relacionamentos pessoais'
       ],
-      feedback: 'Você é uma pessoa orientada a resultados, com forte capacidade de liderança. Sua energia e determinação são contagiantes, mas lembre-se de equilibrar sua assertividade com empatia.'
+      feedback: 'Você é uma pessoa orientada a resultados, com forte capacidade de liderança. Sua energia e determinação são contagiantes, mas lembre-se de equilibrar sua assertividade com empatia nos relacionamentos.'
     },
     I: {
       pontos_fortes: [
@@ -93,16 +97,20 @@ function generatePersonalizedFeedback(primary: 'D' | 'I' | 'S' | 'C', secondary:
         'Capacidade natural de inspirar e motivar equipes',
         'Otimismo contagiante e energia positiva',
         'Facilidade para networking e construção de relacionamentos',
-        'Criatividade e pensamento inovador'
+        'Criatividade e pensamento inovador',
+        'Carisma natural em relacionamentos sociais',
+        'Habilidade de conectar pessoas e criar vínculos'
       ],
       areas_desenvolver: [
         'Melhorar o foco em detalhes e follow-up',
         'Desenvolver maior disciplina com prazos',
         'Aprender a ouvir mais e falar menos em algumas situações',
         'Trabalhar a organização e planejamento',
-        'Desenvolver maior profundidade analítica'
+        'Desenvolver maior profundidade analítica',
+        'Melhorar a consistência em relacionamentos de longo prazo',
+        'Desenvolver maior profundidade emocional'
       ],
-      feedback: 'Você é uma pessoa carismática e inspiradora, com grande capacidade de influenciar positivamente outros. Sua energia e entusiasmo são seus maiores ativos, mas atenção aos detalhes pode potencializar ainda mais seus resultados.'
+      feedback: 'Você é uma pessoa carismática e inspiradora, com grande capacidade de influenciar positivamente outros. Sua energia e entusiasmo são seus maiores ativos nos relacionamentos, mas atenção aos detalhes pode potencializar ainda mais seus resultados.'
     },
     S: {
       pontos_fortes: [
@@ -110,16 +118,20 @@ function generatePersonalizedFeedback(primary: 'D' | 'I' | 'S' | 'C', secondary:
         'Excelente capacidade de trabalho em equipe',
         'Paciência e persistência em projetos longos',
         'Habilidade natural para mediar conflitos',
-        'Estabilidade emocional e calma sob pressão'
+        'Estabilidade emocional e calma sob pressão',
+        'Capacidade de criar relacionamentos duradouros',
+        'Empatia natural e sensibilidade às necessidades dos outros'
       ],
       areas_desenvolver: [
         'Desenvolver maior assertividade e autoconfiança',
         'Aprender a expressar opiniões com mais frequência',
         'Trabalhar a adaptabilidade a mudanças rápidas',
         'Desenvolver maior iniciativa proativa',
-        'Melhorar habilidades de autopromoção'
+        'Melhorar habilidades de autopromoção',
+        'Aprender a estabelecer limites em relacionamentos',
+        'Desenvolver maior coragem para confrontar conflitos'
       ],
-      feedback: 'Você é uma pessoa confiável e estável, que traz harmonia aos ambientes. Sua lealdade e capacidade de apoiar outros são admiráveis. Desenvolver mais assertividade pode ampliar ainda mais seu impacto.'
+      feedback: 'Você é uma pessoa confiável e estável, que traz harmonia aos relacionamentos e ambientes. Sua lealdade e capacidade de apoiar outros são admiráveis. Desenvolver mais assertividade pode ampliar ainda mais seu impacto.'
     },
     C: {
       pontos_fortes: [
@@ -127,16 +139,20 @@ function generatePersonalizedFeedback(primary: 'D' | 'I' | 'S' | 'C', secondary:
         'Capacidade analítica e pensamento sistemático',
         'Alto padrão de qualidade e excelência',
         'Planejamento cuidadoso e organização',
-        'Capacidade de identificar riscos e problemas'
+        'Capacidade de identificar riscos e problemas',
+        'Confiabilidade e consistência em relacionamentos',
+        'Capacidade de oferecer conselhos bem fundamentados'
       ],
       areas_desenvolver: [
         'Desenvolver maior flexibilidade e adaptabilidade',
         'Aprender a tomar decisões com informações incompletas',
         'Melhorar habilidades de comunicação interpessoal',
         'Trabalhar a tolerância a ambiguidade',
-        'Desenvolver maior velocidade na execução'
+        'Desenvolver maior velocidade na execução',
+        'Melhorar expressão emocional em relacionamentos',
+        'Desenvolver maior espontaneidade social'
       ],
-      feedback: 'Você é uma pessoa meticulosa e analítica, com alto padrão de qualidade. Sua capacidade de análise e atenção aos detalhes são excepcionais. Equilibrar precisão com agilidade pode maximizar sua efetividade.'
+      feedback: 'Você é uma pessoa meticulosa e analítica, com alto padrão de qualidade. Sua capacidade de análise e atenção aos detalhes são excepcionais nos relacionamentos. Equilibrar precisão com flexibilidade emocional pode maximizar sua efetividade.'
     }
   }
 
@@ -162,7 +178,7 @@ function generatePersonalizedFeedback(primary: 'D' | 'I' | 'S' | 'C', secondary:
   }
 }
 
-// Dados das questões DISC (25 questões)
+// Dados das questões DISC (25 questões) - incluindo relacionamentos
 export const discQuestions = [
   {
     id: 1,
@@ -206,6 +222,14 @@ export const discQuestions = [
   },
   {
     id: 6,
+    question_text: "Em relacionamentos amorosos, você tende a:",
+    option_d: "Ser direto sobre suas necessidades e expectativas",
+    option_i: "Expressar afeto de forma calorosa e espontânea",
+    option_s: "Ser leal e buscar estabilidade emocional",
+    option_c: "Analisar a compatibilidade antes de se comprometer"
+  },
+  {
+    id: 7,
     question_text: "Ao trabalhar em projetos, você prefere:",
     option_d: "Liderar e definir a direção",
     option_i: "Colaborar e gerar ideias",
@@ -213,15 +237,15 @@ export const discQuestions = [
     option_c: "Planejar e organizar detalhes"
   },
   {
-    id: 7,
-    question_text: "Sua abordagem para mudanças é:",
-    option_d: "Abraço mudanças como oportunidades",
-    option_i: "Vejo mudanças como aventuras",
-    option_s: "Prefiro mudanças graduais",
-    option_c: "Analiso riscos antes de mudar"
+    id: 8,
+    question_text: "Em conflitos com amigos ou familiares:",
+    option_d: "Confronto diretamente para resolver rapidamente",
+    option_i: "Uso humor e charme para amenizar a situação",
+    option_s: "Evito conflitos e busco harmonia",
+    option_c: "Analiso os fatos antes de tomar posição"
   },
   {
-    id: 8,
+    id: 9,
     question_text: "No ambiente de trabalho, você é conhecido por:",
     option_d: "Ser determinado e focado em resultados",
     option_i: "Ser sociável e inspirador",
@@ -229,7 +253,15 @@ export const discQuestions = [
     option_c: "Ser meticuloso e preciso"
   },
   {
-    id: 9,
+    id: 10,
+    question_text: "Ao fazer novos amigos, você:",
+    option_d: "É seletivo e busca pessoas que compartilham seus objetivos",
+    option_i: "Se conecta facilmente e gosta de conhecer muitas pessoas",
+    option_s: "Prefere amizades profundas e duradouras",
+    option_c: "Observa primeiro antes de se abrir"
+  },
+  {
+    id: 11,
     question_text: "Ao tomar decisões importantes:",
     option_d: "Confio na minha intuição e ajo",
     option_i: "Consulto outros e busco consenso",
@@ -237,7 +269,15 @@ export const discQuestions = [
     option_c: "Analiso dados e evidências"
   },
   {
-    id: 10,
+    id: 12,
+    question_text: "Em relacionamentos familiares, você:",
+    option_d: "Assume responsabilidades e toma decisões",
+    option_i: "Traz alegria e mantém o clima positivo",
+    option_s: "É o mediador e mantém a união",
+    option_c: "Oferece conselhos práticos e bem pensados"
+  },
+  {
+    id: 13,
     question_text: "Seu ritmo de trabalho é:",
     option_d: "Rápido e intenso",
     option_i: "Variável e energético",
@@ -245,7 +285,15 @@ export const discQuestions = [
     option_c: "Cuidadoso e metódico"
   },
   {
-    id: 11,
+    id: 14,
+    question_text: "Quando alguém precisa de apoio emocional:",
+    option_d: "Ofereço soluções práticas e diretas",
+    option_i: "Uso otimismo e encorajamento",
+    option_s: "Escuto pacientemente e ofereço conforto",
+    option_c: "Analiso a situação e dou conselhos fundamentados"
+  },
+  {
+    id: 15,
     question_text: "Em conflitos, você tende a:",
     option_d: "Confrontar diretamente o problema",
     option_i: "Buscar soluções criativas e positivas",
@@ -253,7 +301,7 @@ export const discQuestions = [
     option_c: "Analisar fatos e buscar justiça"
   },
   {
-    id: 12,
+    id: 16,
     question_text: "Sua motivação principal é:",
     option_d: "Alcançar objetivos e vencer desafios",
     option_i: "Reconhecimento e interação social",
@@ -261,7 +309,15 @@ export const discQuestions = [
     option_c: "Qualidade e precisão no trabalho"
   },
   {
-    id: 13,
+    id: 17,
+    question_text: "Em relacionamentos de trabalho, você:",
+    option_d: "Foca nos resultados e mantém profissionalismo",
+    option_i: "Cria conexões pessoais e ambiente positivo",
+    option_s: "Constrói confiança e colaboração",
+    option_c: "Mantém padrões altos e comunicação clara"
+  },
+  {
+    id: 18,
     question_text: "Ao liderar uma equipe:",
     option_d: "Estabeleço metas claras e exijo resultados",
     option_i: "Inspiro e motivo com entusiasmo",
@@ -269,7 +325,7 @@ export const discQuestions = [
     option_c: "Organizo processos e sistemas"
   },
   {
-    id: 14,
+    id: 19,
     question_text: "Sua maior força é:",
     option_d: "Determinação e foco em resultados",
     option_i: "Carisma e habilidade social",
@@ -277,7 +333,15 @@ export const discQuestions = [
     option_c: "Análise e atenção aos detalhes"
   },
   {
-    id: 15,
+    id: 20,
+    question_text: "Em relacionamentos íntimos, você valoriza:",
+    option_d: "Honestidade direta e objetivos compartilhados",
+    option_i: "Diversão, romance e conexão emocional",
+    option_s: "Estabilidade, confiança e compromisso",
+    option_c: "Compatibilidade intelectual e respeito mútuo"
+  },
+  {
+    id: 21,
     question_text: "Em apresentações, você:",
     option_d: "Foco nos pontos principais e resultados",
     option_i: "Uso histórias e exemplos envolventes",
@@ -285,15 +349,15 @@ export const discQuestions = [
     option_c: "Incluo dados detalhados e evidências"
   },
   {
-    id: 16,
-    question_text: "Ao receber feedback:",
-    option_d: "Aceito se for construtivo e direto",
+    id: 22,
+    question_text: "Ao receber críticas de pessoas próximas:",
+    option_d: "Aceito se for construtiva e direta",
     option_i: "Prefiro feedback positivo e encorajador",
-    option_s: "Valorizo feedback gentil e privado",
-    option_c: "Quero feedback específico e baseado em fatos"
+    option_s: "Valorizo críticas gentis e privadas",
+    option_c: "Quero críticas específicas e baseadas em fatos"
   },
   {
-    id: 17,
+    id: 23,
     question_text: "Seu ambiente de trabalho ideal é:",
     option_d: "Desafiador e orientado a resultados",
     option_i: "Dinâmico e socialmente ativo",
@@ -301,67 +365,19 @@ export const discQuestions = [
     option_c: "Organizado e estruturado"
   },
   {
-    id: 18,
-    question_text: "Ao aprender algo novo:",
-    option_d: "Quero aplicar imediatamente",
-    option_i: "Gosto de compartilhar com outros",
-    option_s: "Prefiro aprender gradualmente",
-    option_c: "Estudo profundamente antes de aplicar"
-  },
-  {
-    id: 19,
-    question_text: "Sua abordagem para prazos é:",
-    option_d: "Trabalho intensamente para cumprir",
-    option_i: "Mantenho energia e otimismo",
-    option_s: "Planejo para evitar pressão",
-    option_c: "Organizo tudo com antecedência"
-  },
-  {
-    id: 20,
-    question_text: "Em networking, você:",
-    option_d: "Foco em contatos que podem ajudar objetivos",
-    option_i: "Gosto de conhecer muitas pessoas",
-    option_s: "Prefiro relacionamentos profundos",
-    option_c: "Sou seletivo e profissional"
-  },
-  {
-    id: 21,
-    question_text: "Ao delegar tarefas:",
-    option_d: "Dou autonomia mas exijo resultados",
-    option_i: "Motivo e inspiro a equipe",
-    option_s: "Ofereço suporte constante",
-    option_c: "Dou instruções claras e detalhadas"
-  },
-  {
-    id: 22,
-    question_text: "Sua reação ao estresse é:",
-    option_d: "Torno-me mais focado e determinado",
-    option_i: "Busco apoio social e otimismo",
-    option_s: "Mantenho calma e busco estabilidade",
-    option_c: "Analiso a situação sistematicamente"
-  },
-  {
-    id: 23,
-    question_text: "Em brainstorming, você:",
-    option_d: "Foco em ideias práticas e viáveis",
-    option_i: "Contribuo com muitas ideias criativas",
-    option_s: "Apoio e desenvolvo ideias dos outros",
-    option_c: "Avalio prós e contras de cada ideia"
-  },
-  {
     id: 24,
-    question_text: "Seu estilo de planejamento é:",
-    option_d: "Planos flexíveis focados em resultados",
-    option_i: "Planos inspiradores com visão ampla",
-    option_s: "Planos estáveis e bem estruturados",
-    option_c: "Planos detalhados com contingências"
+    question_text: "Em situações sociais, você:",
+    option_d: "Prefere grupos pequenos com conversas objetivas",
+    option_i: "Gosta de ser o centro das atenções",
+    option_s: "Prefere observar e participar quando confortável",
+    option_c: "Gosta de conversas profundas e significativas"
   },
   {
     id: 25,
-    question_text: "Ao finalizar projetos, você:",
-    option_d: "Celebro rapidamente e parto para o próximo",
-    option_i: "Compartilho sucessos com a equipe",
-    option_s: "Garanto que tudo está bem finalizado",
-    option_c: "Analiso lições aprendidas e melhorias"
+    question_text: "Ao expressar amor ou carinho:",
+    option_d: "Demonstro através de ações e conquistas",
+    option_i: "Expresso verbalmente e com gestos carinhosos",
+    option_s: "Mostro através de cuidado e presença constante",
+    option_c: "Demonstro através de atos de serviço e atenção aos detalhes"
   }
 ]

@@ -5,8 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { Download, Share2, Star, TrendingUp, Users, Target, Brain, CheckCircle, AlertCircle, Layers } from 'lucide-react'
-import jsPDF from 'jspdf'
-import html2canvas from 'html2canvas'
 
 interface DISCResult {
   D_nat: number
@@ -85,45 +83,49 @@ export default function DISCReport({ result, user, onRestart, onUpgrade }: DISCR
   const ProfileIcon = currentProfile?.icon || Target
   const SecondaryIcon = secondaryProfile?.icon || Target
 
-  // Função para gerar PDF profissional
+  // Função para gerar PDF com cores compatíveis
   const generatePDF = async () => {
     try {
+      // Importar bibliotecas dinamicamente
+      const jsPDF = (await import('jspdf')).default
+      const html2canvas = (await import('html2canvas')).default
+
       // Criar um elemento temporário com o conteúdo do relatório
       const reportElement = document.createElement('div')
       reportElement.style.width = '210mm' // A4 width
       reportElement.style.padding = '20mm'
       reportElement.style.fontFamily = 'Arial, sans-serif'
-      reportElement.style.backgroundColor = 'white'
-      reportElement.style.color = '#333'
+      reportElement.style.backgroundColor = '#ffffff'
+      reportElement.style.color = '#333333'
       
       reportElement.innerHTML = `
         <div style="text-align: center; margin-bottom: 30px;">
           <h1 style="color: #3b82f6; font-size: 28px; margin-bottom: 10px;">RELATÓRIO DISC PERSONALIZADO</h1>
-          <div style="background: linear-gradient(45deg, #f59e0b, #ec4899); color: white; padding: 8px 16px; border-radius: 20px; display: inline-block; font-size: 12px; font-weight: bold;">
+          <div style="background: #f59e0b; color: #ffffff; padding: 8px 16px; border-radius: 20px; display: inline-block; font-size: 12px; font-weight: bold;">
             ⚡ Otnitec - Tecnologia em Avaliação Comportamental
           </div>
-          <p style="margin-top: 15px; font-size: 16px; color: #666;">Análise comportamental personalizada para <strong>${user.name}</strong></p>
-          <p style="font-size: 14px; color: #888;">Gerado em: ${new Date().toLocaleDateString('pt-BR')}</p>
+          <p style="margin-top: 15px; font-size: 16px; color: #666666;">Análise comportamental personalizada para <strong>${user.name}</strong></p>
+          <p style="font-size: 14px; color: #888888;">Gerado em: ${new Date().toLocaleDateString('pt-BR')}</p>
         </div>
 
         <div style="border: 2px solid #3b82f6; border-radius: 10px; padding: 20px; margin-bottom: 25px; background: #f8fafc;">
           <h2 style="color: #3b82f6; font-size: 22px; margin-bottom: 15px;">🎯 SEU PERFIL PRIMÁRIO: ${result.primary_profile.toUpperCase()}</h2>
           <p style="font-size: 16px; line-height: 1.6; margin-bottom: 15px;">${currentProfile?.description}</p>
           
-          <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #3b82f6;">
+          <div style="background: #ffffff; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #3b82f6;">
             <h3 style="color: #1e40af; font-size: 16px; margin-bottom: 10px;">💬 Feedback Comportamental Personalizado:</h3>
             <p style="font-style: italic; line-height: 1.6;">${result.feedback_comportamental}</p>
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
-            <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #10b981;">
+            <div style="background: #ffffff; padding: 15px; border-radius: 8px; border-left: 4px solid #10b981;">
               <h3 style="color: #059669; font-size: 16px; margin-bottom: 10px;">✅ Seus Pontos Fortes:</h3>
               <ul style="margin: 0; padding-left: 20px;">
                 ${result.pontos_fortes.map(strength => `<li style="margin-bottom: 5px; line-height: 1.4;">${strength}</li>`).join('')}
               </ul>
             </div>
             
-            <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+            <div style="background: #ffffff; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b;">
               <h3 style="color: #d97706; font-size: 16px; margin-bottom: 10px;">🎯 Áreas a Desenvolver:</h3>
               <ul style="margin: 0; padding-left: 20px;">
                 ${result.areas_desenvolver.map(area => `<li style="margin-bottom: 5px; line-height: 1.4;">${area}</li>`).join('')}
@@ -131,28 +133,28 @@ export default function DISCReport({ result, user, onRestart, onUpgrade }: DISCR
             </div>
           </div>
 
-          <div style="background: white; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #8b5cf6;">
+          <div style="background: #ffffff; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #8b5cf6;">
             <h3 style="color: #7c3aed; font-size: 16px; margin-bottom: 10px;">💬 Estilo de Comunicação:</h3>
             <p style="line-height: 1.6;">${currentProfile?.communication}</p>
           </div>
         </div>
 
-        <div style="border: 2px solid #8b5cf6; border-radius: 10px; padding: 20px; margin-bottom: 25px; background: linear-gradient(135deg, #f3e8ff, #ddd6fe);">
+        <div style="border: 2px solid #8b5cf6; border-radius: 10px; padding: 20px; margin-bottom: 25px; background: #f3e8ff;">
           <h2 style="color: #7c3aed; font-size: 22px; margin-bottom: 15px;">🔍 ANÁLISE DO PERFIL SECUNDÁRIO: ${result.secondary_profile.toUpperCase()}</h2>
           
-          <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+          <div style="background: #ffffff; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
             <h3 style="color: #7c3aed; font-size: 18px; margin-bottom: 10px;">${result.combinacao_perfis}</h3>
             <p style="line-height: 1.6; margin-bottom: 15px;">${result.analise_perfil_secundario}</p>
           </div>
 
-          <div style="background: white; padding: 15px; border-radius: 8px;">
+          <div style="background: #ffffff; padding: 15px; border-radius: 8px;">
             <h3 style="color: #6366f1; font-size: 16px; margin-bottom: 15px;">🧠 Como a Combinação dos Perfis Influencia Seu Comportamento:</h3>
             <ol style="margin: 0; padding-left: 20px;">
               ${result.influencia_comportamental.map(influencia => `<li style="margin-bottom: 8px; line-height: 1.5;">${influencia}</li>`).join('')}
             </ol>
           </div>
 
-          <div style="background: linear-gradient(45deg, #a855f7, #3b82f6); color: white; padding: 15px; border-radius: 8px; margin-top: 15px;">
+          <div style="background: #a855f7; color: #ffffff; padding: 15px; border-radius: 8px; margin-top: 15px;">
             <h4 style="margin-bottom: 10px; font-size: 16px;">🎯 Insight Comportamental:</h4>
             <p style="font-size: 14px; line-height: 1.5;">
               A combinação do seu perfil primário <strong>${result.primary_profile}</strong> com o secundário <strong>${result.secondary_profile}</strong> 
@@ -165,25 +167,25 @@ export default function DISCReport({ result, user, onRestart, onUpgrade }: DISCR
           <h2 style="color: #059669; font-size: 22px; margin-bottom: 15px;">📊 PONTUAÇÕES DO SEU PERFIL COMPORTAMENTAL</h2>
           
           <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
-            <div style="text-align: center; background: white; padding: 15px; border-radius: 8px; border: 2px solid #ef4444;">
+            <div style="text-align: center; background: #ffffff; padding: 15px; border-radius: 8px; border: 2px solid #ef4444;">
               <div style="font-size: 24px; font-weight: bold; color: #ef4444; margin-bottom: 5px;">${result.D_nat}%</div>
-              <div style="font-size: 14px; color: #666;">Dominância</div>
+              <div style="font-size: 14px; color: #666666;">Dominância</div>
             </div>
-            <div style="text-align: center; background: white; padding: 15px; border-radius: 8px; border: 2px solid #f59e0b;">
+            <div style="text-align: center; background: #ffffff; padding: 15px; border-radius: 8px; border: 2px solid #f59e0b;">
               <div style="font-size: 24px; font-weight: bold; color: #f59e0b; margin-bottom: 5px;">${result.I_nat}%</div>
-              <div style="font-size: 14px; color: #666;">Influência</div>
+              <div style="font-size: 14px; color: #666666;">Influência</div>
             </div>
-            <div style="text-align: center; background: white; padding: 15px; border-radius: 8px; border: 2px solid #10b981;">
+            <div style="text-align: center; background: #ffffff; padding: 15px; border-radius: 8px; border: 2px solid #10b981;">
               <div style="font-size: 24px; font-weight: bold; color: #10b981; margin-bottom: 5px;">${result.S_nat}%</div>
-              <div style="font-size: 14px; color: #666;">Estabilidade</div>
+              <div style="font-size: 14px; color: #666666;">Estabilidade</div>
             </div>
-            <div style="text-align: center; background: white; padding: 15px; border-radius: 8px; border: 2px solid #3b82f6;">
+            <div style="text-align: center; background: #ffffff; padding: 15px; border-radius: 8px; border: 2px solid #3b82f6;">
               <div style="font-size: 24px; font-weight: bold; color: #3b82f6; margin-bottom: 5px;">${result.C_nat}%</div>
-              <div style="font-size: 14px; color: #666;">Conformidade</div>
+              <div style="font-size: 14px; color: #666666;">Conformidade</div>
             </div>
           </div>
 
-          <div style="background: white; padding: 15px; border-radius: 8px;">
+          <div style="background: #ffffff; padding: 15px; border-radius: 8px;">
             <h3 style="color: #059669; font-size: 16px; margin-bottom: 10px;">📈 Interpretação das Pontuações:</h3>
             <p style="line-height: 1.6; font-size: 14px;">
               Suas pontuações mostram a intensidade de cada traço comportamental. Pontuações mais altas (acima de 50%) indicam 
@@ -216,12 +218,18 @@ export default function DISCReport({ result, user, onRestart, onUpgrade }: DISCR
       // Adicionar ao DOM temporariamente
       document.body.appendChild(reportElement)
 
-      // Capturar como canvas
+      // Capturar como canvas com configurações otimizadas
       const canvas = await html2canvas(reportElement, {
-        scale: 2,
+        scale: 1.5,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        removeContainer: true,
+        logging: false,
+        ignoreElements: (element) => {
+          // Ignorar elementos que podem causar problemas
+          return element.tagName === 'SCRIPT' || element.tagName === 'STYLE'
+        }
       })
 
       // Remover elemento temporário

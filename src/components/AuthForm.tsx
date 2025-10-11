@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { User, Lock, Mail, UserPlus, LogIn } from 'lucide-react'
+import { User, Mail, Lock, Eye, EyeOff, CheckCircle, AlertCircle } from 'lucide-react'
 
 interface User {
   name: string
@@ -15,248 +15,169 @@ interface User {
 }
 
 interface AuthFormProps {
-  onAuthSuccess: (user: User) => void
+  onAuthSuccess: (user: { name: string; email: string }) => void
+  onCancel: () => void
 }
 
-export default function AuthForm({ onAuthSuccess }: AuthFormProps) {
-  const [isLoading, setIsLoading] = useState(false)
+export default function AuthForm({ onAuthSuccess, onCancel }: AuthFormProps) {
+  const [activeTab, setActiveTab] = useState('login')
+  const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  
-  // Estados para cadastro
-  const [signupData, setSignupData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  })
-  
-  // Estados para login
+  const [success, setSuccess] = useState('')
+
+  // Estados do formulário
   const [loginData, setLoginData] = useState({
     email: '',
     password: ''
   })
 
-  // Simular banco de dados local (localStorage)
-  const getUsers = (): User[] => {
-    if (typeof window === 'undefined') return []
-    const users = localStorage.getItem('disc_users')
-    return users ? JSON.parse(users) : []
+  const [registerData, setRegisterData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  })
+
+  // Validação de email
+  const isValidEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
   }
 
-  const saveUser = (user: User) => {
-    if (typeof window === 'undefined') return
-    const users = getUsers()
-    users.push(user)
-    localStorage.setItem('disc_users', JSON.stringify(users))
+  // Validação de senha
+  const isValidPassword = (password: string) => {
+    return password.length >= 6
   }
 
-  const handleSignup = async (e: React.FormEvent) => {
+  // Função para fazer login
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
+    setLoading(true)
     setError('')
+    setSuccess('')
 
     try {
       // Validações
-      if (!signupData.name.trim()) {
-        throw new Error('Nome é obrigatório')
-      }
-      if (!signupData.email.trim()) {
-        throw new Error('Email é obrigatório')
-      }
-      if (!signupData.password) {
-        throw new Error('Senha é obrigatória')
-      }
-      if (signupData.password !== signupData.confirmPassword) {
-        throw new Error('Senhas não coincidem')
-      }
-      if (signupData.password.length < 6) {
-        throw new Error('Senha deve ter pelo menos 6 caracteres')
+      if (!loginData.email || !loginData.password) {
+        throw new Error('Por favor, preencha todos os campos')
       }
 
-      // Verificar se email já existe
-      const users = getUsers()
-      const existingUser = users.find(user => user.email === signupData.email)
-      if (existingUser) {
-        throw new Error('Este email já está cadastrado')
+      if (!isValidEmail(loginData.email)) {
+        throw new Error('Por favor, insira um email válido')
+      }
+
+      // Simular delay de autenticação
+      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      // Verificar se usuário existe no localStorage
+      const users = JSON.parse(localStorage.getItem('disc_users') || '[]')
+      const user = users.find((u: User) => 
+        u.email === loginData.email && u.password === loginData.password
+      )
+
+      if (!user) {
+        throw new Error('Email ou senha incorretos')
+      }
+
+      setSuccess('Login realizado com sucesso!')
+      
+      // Aguardar um pouco para mostrar a mensagem de sucesso
+      setTimeout(() => {
+        onAuthSuccess({ name: user.name, email: user.email })
+      }, 1000)
+
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao fazer login')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Função para fazer cadastro
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    setSuccess('')
+
+    try {
+      // Validações
+      if (!registerData.name || !registerData.email || !registerData.password || !registerData.confirmPassword) {
+        throw new Error('Por favor, preencha todos os campos')
+      }
+
+      if (!isValidEmail(registerData.email)) {
+        throw new Error('Por favor, insira um email válido')
+      }
+
+      if (!isValidPassword(registerData.password)) {
+        throw new Error('A senha deve ter pelo menos 6 caracteres')
+      }
+
+      if (registerData.password !== registerData.confirmPassword) {
+        throw new Error('As senhas não coincidem')
       }
 
       // Simular delay de cadastro
       await new Promise(resolve => setTimeout(resolve, 1000))
 
-      // Criar novo usuário
+      // Verificar se usuário já existe
+      const users = JSON.parse(localStorage.getItem('disc_users') || '[]')
+      const existingUser = users.find((u: User) => u.email === registerData.email)
+
+      if (existingUser) {
+        throw new Error('Este email já está cadastrado')
+      }
+
+      // Salvar novo usuário
       const newUser: User = {
-        name: signupData.name,
-        email: signupData.email,
-        password: signupData.password
+        name: registerData.name,
+        email: registerData.email,
+        password: registerData.password
       }
 
-      saveUser(newUser)
-      onAuthSuccess(newUser)
+      users.push(newUser)
+      localStorage.setItem('disc_users', JSON.stringify(users))
 
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao criar conta')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError('')
-
-    try {
-      // Validações
-      if (!loginData.email.trim()) {
-        throw new Error('Email é obrigatório')
-      }
-      if (!loginData.password) {
-        throw new Error('Senha é obrigatória')
-      }
-
-      // Simular delay de login
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
-      // Verificar credenciais
-      const users = getUsers()
-      const user = users.find(u => u.email === loginData.email && u.password === loginData.password)
+      setSuccess('Cadastro realizado com sucesso!')
       
-      if (!user) {
-        throw new Error('Email ou senha incorretos')
-      }
-
-      onAuthSuccess(user)
+      // Aguardar um pouco para mostrar a mensagem de sucesso
+      setTimeout(() => {
+        onAuthSuccess({ name: newUser.name, email: newUser.email })
+      }, 1000)
 
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao fazer login')
+      setError(err instanceof Error ? err.message : 'Erro ao fazer cadastro')
     } finally {
-      setIsLoading(false)
+      setLoading(false)
     }
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-6">
-      <div className="max-w-md w-full space-y-6">
-        {/* Header */}
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
             DISC Rápido
           </h1>
-          <div className="bg-gradient-to-r from-orange-400 to-pink-500 text-white px-4 py-2 rounded-full inline-block text-sm font-semibold">
-            ⚡ Otnitec - Tecnologia em Avaliação Comportamental
-          </div>
-          <p className="text-lg text-gray-600">
-            Faça login ou crie sua conta para acessar o teste DISC
-          </p>
+          <p className="text-gray-600">Faça login ou cadastre-se para continuar</p>
         </div>
 
-        {/* Formulário de Auth */}
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="text-center text-2xl">
+            <CardTitle className="text-center text-xl">
               Acesso ao Teste DISC
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="signup" className="space-y-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="signup" className="flex items-center gap-2">
-                  <UserPlus className="h-4 w-4" />
-                  Criar Conta
-                </TabsTrigger>
-                <TabsTrigger value="login" className="flex items-center gap-2">
-                  <LogIn className="h-4 w-4" />
-                  Entrar
-                </TabsTrigger>
+                <TabsTrigger value="login">Entrar</TabsTrigger>
+                <TabsTrigger value="register">Cadastrar</TabsTrigger>
               </TabsList>
 
-              {/* Cadastro */}
-              <TabsContent value="signup">
-                <form onSubmit={handleSignup} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-name">Nome Completo</Label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="signup-name"
-                        type="text"
-                        placeholder="Seu nome completo"
-                        value={signupData.name}
-                        onChange={(e) => setSignupData({...signupData, name: e.target.value})}
-                        className="pl-10"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="signup-email"
-                        type="email"
-                        placeholder="seu@email.com"
-                        value={signupData.email}
-                        onChange={(e) => setSignupData({...signupData, email: e.target.value})}
-                        className="pl-10"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password">Senha</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="signup-password"
-                        type="password"
-                        placeholder="Mínimo 6 caracteres"
-                        value={signupData.password}
-                        onChange={(e) => setSignupData({...signupData, password: e.target.value})}
-                        className="pl-10"
-                        required
-                        minLength={6}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-confirm">Confirmar Senha</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="signup-confirm"
-                        type="password"
-                        placeholder="Confirme sua senha"
-                        value={signupData.confirmPassword}
-                        onChange={(e) => setSignupData({...signupData, confirmPassword: e.target.value})}
-                        className="pl-10"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  {error && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-center">
-                      <p className="text-red-800 text-sm">{error}</p>
-                    </div>
-                  )}
-
-                  <Button 
-                    type="submit" 
-                    disabled={isLoading}
-                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                    size="lg"
-                  >
-                    {isLoading ? 'Criando conta...' : 'Criar Conta e Iniciar Teste'}
-                  </Button>
-                </form>
-              </TabsContent>
-
-              {/* Login */}
-              <TabsContent value="login">
+              {/* Aba de Login */}
+              <TabsContent value="login" className="space-y-4">
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="login-email">Email</Label>
@@ -266,10 +187,10 @@ export default function AuthForm({ onAuthSuccess }: AuthFormProps) {
                         id="login-email"
                         type="email"
                         placeholder="seu@email.com"
-                        value={loginData.email}
-                        onChange={(e) => setLoginData({...loginData, email: e.target.value})}
                         className="pl-10"
-                        required
+                        value={loginData.email}
+                        onChange={(e) => setLoginData(prev => ({ ...prev, email: e.target.value }))}
+                        disabled={loading}
                       />
                     </div>
                   </div>
@@ -280,51 +201,154 @@ export default function AuthForm({ onAuthSuccess }: AuthFormProps) {
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                       <Input
                         id="login-password"
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         placeholder="Sua senha"
+                        className="pl-10 pr-10"
                         value={loginData.password}
-                        onChange={(e) => setLoginData({...loginData, password: e.target.value})}
+                        onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
+                        disabled={loading}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                        disabled={loading}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                    disabled={loading}
+                  >
+                    {loading ? 'Entrando...' : 'Entrar'}
+                  </Button>
+                </form>
+              </TabsContent>
+
+              {/* Aba de Cadastro */}
+              <TabsContent value="register" className="space-y-4">
+                <form onSubmit={handleRegister} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="register-name">Nome Completo</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="register-name"
+                        type="text"
+                        placeholder="Seu nome completo"
                         className="pl-10"
-                        required
+                        value={registerData.name}
+                        onChange={(e) => setRegisterData(prev => ({ ...prev, name: e.target.value }))}
+                        disabled={loading}
                       />
                     </div>
                   </div>
 
-                  {error && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-center">
-                      <p className="text-red-800 text-sm">{error}</p>
+                  <div className="space-y-2">
+                    <Label htmlFor="register-email">Email</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="register-email"
+                        type="email"
+                        placeholder="seu@email.com"
+                        className="pl-10"
+                        value={registerData.email}
+                        onChange={(e) => setRegisterData(prev => ({ ...prev, email: e.target.value }))}
+                        disabled={loading}
+                      />
                     </div>
-                  )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="register-password">Senha</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="register-password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Mínimo 6 caracteres"
+                        className="pl-10 pr-10"
+                        value={registerData.password}
+                        onChange={(e) => setRegisterData(prev => ({ ...prev, password: e.target.value }))}
+                        disabled={loading}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                        disabled={loading}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="register-confirm-password">Confirmar Senha</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="register-confirm-password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Confirme sua senha"
+                        className="pl-10"
+                        value={registerData.confirmPassword}
+                        onChange={(e) => setRegisterData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                        disabled={loading}
+                      />
+                    </div>
+                  </div>
 
                   <Button 
                     type="submit" 
-                    disabled={isLoading}
-                    className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
-                    size="lg"
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                    disabled={loading}
                   >
-                    {isLoading ? 'Entrando...' : 'Entrar e Iniciar Teste'}
+                    {loading ? 'Cadastrando...' : 'Criar Conta'}
                   </Button>
                 </form>
               </TabsContent>
             </Tabs>
-          </CardContent>
-        </Card>
 
-        {/* Informações sobre o teste */}
-        <Card className="bg-blue-50 border-blue-200">
-          <CardContent className="pt-6">
-            <div className="text-center text-sm text-blue-800 space-y-2">
-              <p className="font-medium">🔒 Seus dados estão seguros</p>
-              <p>
-                Utilizamos apenas seu nome e email para personalizar o relatório. 
-                Suas informações ficam armazenadas localmente no seu navegador.
-              </p>
-              <p className="text-blue-600 font-medium">
-                ✨ Após o login, você terá acesso imediato ao teste DISC e poderá baixar seu relatório em PDF.
-              </p>
+            {/* Mensagens de erro e sucesso */}
+            {error && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-red-600" />
+                <span className="text-red-800 text-sm">{error}</span>
+              </div>
+            )}
+
+            {success && (
+              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <span className="text-green-800 text-sm">{success}</span>
+              </div>
+            )}
+
+            {/* Botão de cancelar */}
+            <div className="mt-6 text-center">
+              <Button 
+                variant="ghost" 
+                onClick={onCancel}
+                disabled={loading}
+                className="text-gray-600 hover:text-gray-800"
+              >
+                Voltar
+              </Button>
             </div>
           </CardContent>
         </Card>
+
+        {/* Informações sobre segurança */}
+        <div className="mt-6 text-center text-xs text-gray-500">
+          <p>🔒 Seus dados são armazenados localmente e com segurança</p>
+          <p>📧 Use um email válido para receber seu relatório</p>
+        </div>
       </div>
     </div>
   )

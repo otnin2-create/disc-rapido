@@ -6,16 +6,35 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import DISCTest from '@/components/DISCTest'
 import DISCReport from '@/components/DISCReport'
+import AuthForm from '@/components/AuthForm'
 import { discQuestions, type DISCResponse, type DISCResult } from '@/lib/disc-algorithm'
 import { useDISCTest } from '@/hooks/useDISCTest'
-import { Brain, Users, Target, Star, Play, CheckCircle, Clock, BarChart3, Loader2 } from 'lucide-react'
+import { Brain, Users, Target, Star, Play, CheckCircle, Clock, BarChart3, Loader2, LogOut } from 'lucide-react'
 
-type AppState = 'welcome' | 'testing' | 'report' | 'upgrade'
+type AppState = 'auth' | 'welcome' | 'testing' | 'report' | 'upgrade'
+
+interface User {
+  name: string
+  email: string
+  password: string
+}
 
 export default function Home() {
-  const [appState, setAppState] = useState<AppState>('welcome')
+  const [appState, setAppState] = useState<AppState>('auth')
   const [testResult, setTestResult] = useState<DISCResult | null>(null)
+  const [user, setUser] = useState<User | null>(null)
   const { saveTestResponses, logActivity, loading, error } = useDISCTest()
+
+  const handleAuthSuccess = (userData: User) => {
+    setUser(userData)
+    setAppState('welcome')
+  }
+
+  const handleLogout = () => {
+    setUser(null)
+    setTestResult(null)
+    setAppState('auth')
+  }
 
   const handleStartTest = async () => {
     await logActivity('test_started')
@@ -48,6 +67,12 @@ export default function Home() {
     setAppState('upgrade')
   }
 
+  // Tela de autenticação
+  if (appState === 'auth') {
+    return <AuthForm onAuthSuccess={handleAuthSuccess} />
+  }
+
+  // Tela de teste
   if (appState === 'testing') {
     return (
       <DISCTest 
@@ -57,24 +82,40 @@ export default function Home() {
     )
   }
 
-  if (appState === 'report' && testResult) {
+  // Tela de relatório
+  if (appState === 'report' && testResult && user) {
     return (
       <DISCReport 
         result={testResult}
+        user={user}
         onRestart={handleRestart}
         onUpgrade={handleUpgrade}
       />
     )
   }
 
+  // Tela de upgrade
   if (appState === 'upgrade') {
     return (
       <div className="max-w-4xl mx-auto p-6 space-y-8">
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-            Relatório DISC Completo
-          </h1>
-          <p className="text-xl text-gray-600">Desbloqueie todo o potencial da sua análise</p>
+        {/* Header com usuário logado */}
+        <div className="flex justify-between items-center">
+          <div className="text-center flex-1">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              Relatório DISC Completo
+            </h1>
+            <p className="text-xl text-gray-600">Desbloqueie todo o potencial da sua análise</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <p className="text-sm text-gray-600">Logado como:</p>
+              <p className="font-medium">{user?.name}</p>
+            </div>
+            <Button onClick={handleLogout} variant="outline" size="sm">
+              <LogOut className="h-4 w-4 mr-2" />
+              Sair
+            </Button>
+          </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
@@ -94,6 +135,10 @@ export default function Home() {
                 </div>
                 <div className="flex items-center gap-2 text-green-600">
                   <CheckCircle className="h-4 w-4" />
+                  <span>Análise do perfil secundário</span>
+                </div>
+                <div className="flex items-center gap-2 text-green-600">
+                  <CheckCircle className="h-4 w-4" />
                   <span>Gráfico da curva natural</span>
                 </div>
                 <div className="flex items-center gap-2 text-green-600">
@@ -103,6 +148,10 @@ export default function Home() {
                 <div className="flex items-center gap-2 text-green-600">
                   <CheckCircle className="h-4 w-4" />
                   <span>Feedback comportamental personalizado</span>
+                </div>
+                <div className="flex items-center gap-2 text-green-600">
+                  <CheckCircle className="h-4 w-4" />
+                  <span>Download em PDF</span>
                 </div>
               </div>
               <Button 
@@ -191,18 +240,34 @@ export default function Home() {
     )
   }
 
-  // Welcome Screen
+  // Tela de boas-vindas (após login)
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <div className="max-w-6xl mx-auto p-6 space-y-12">
-        {/* Hero Section */}
-        <div className="text-center space-y-6 py-12">
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
-            DISC Rápido
-          </h1>
-          <div className="bg-gradient-to-r from-orange-400 to-pink-500 text-white px-4 py-2 rounded-full inline-block text-sm font-semibold">
-            ⚡ Otnitec - Tecnologia em Avaliação Comportamental
+        {/* Header com usuário logado */}
+        <div className="flex justify-between items-center">
+          <div className="text-center flex-1">
+            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
+              DISC Rápido
+            </h1>
+            <div className="bg-gradient-to-r from-orange-400 to-pink-500 text-white px-4 py-2 rounded-full inline-block text-sm font-semibold mt-4">
+              ⚡ Otnitec - Tecnologia em Avaliação Comportamental
+            </div>
           </div>
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <p className="text-sm text-gray-600">Bem-vindo(a),</p>
+              <p className="font-medium text-lg">{user?.name}</p>
+            </div>
+            <Button onClick={handleLogout} variant="outline" size="sm">
+              <LogOut className="h-4 w-4 mr-2" />
+              Sair
+            </Button>
+          </div>
+        </div>
+
+        {/* Hero Section */}
+        <div className="text-center space-y-6 py-8">
           <p className="text-2xl text-gray-600 max-w-3xl mx-auto">
             Descubra seu perfil comportamental em apenas 10 minutos
           </p>
@@ -346,13 +411,13 @@ export default function Home() {
             ) : (
               <>
                 <Play className="mr-2 h-6 w-6" />
-                Iniciar Teste Gratuito
+                Iniciar Teste DISC
               </>
             )}
           </Button>
           
           <p className="text-sm text-gray-500">
-            ✨ Relatório básico gratuito • 🔓 Relatório completo disponível após o teste
+            ✨ Relatório personalizado com análise completa • 📄 Download em PDF incluído
           </p>
 
           {error && (

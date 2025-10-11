@@ -16,6 +16,9 @@ export interface DISCResult {
   pontos_fortes: string[]
   areas_desenvolver: string[]
   feedback_comportamental: string
+  analise_perfil_secundario: string
+  combinacao_perfis: string
+  influencia_comportamental: string[]
 }
 
 export function calculateDISC(responses: DISCResponse[]): DISCResult {
@@ -55,6 +58,9 @@ export function calculateDISC(responses: DISCResponse[]): DISCResult {
   // Gerar feedback personalizado baseado no perfil
   const feedbackData = generatePersonalizedFeedback(primaryProfile, secondaryProfile, naturalNormalized)
 
+  // Gerar análise do perfil secundário
+  const secondaryAnalysis = generateSecondaryProfileAnalysis(primaryProfile, secondaryProfile, naturalNormalized)
+
   return {
     D_nat: naturalNormalized.D,
     I_nat: naturalNormalized.I,
@@ -64,7 +70,159 @@ export function calculateDISC(responses: DISCResponse[]): DISCResult {
     secondary_profile: profileNames[secondaryProfile],
     pontos_fortes: feedbackData.pontos_fortes,
     areas_desenvolver: feedbackData.areas_desenvolver,
-    feedback_comportamental: feedbackData.feedback_comportamental
+    feedback_comportamental: feedbackData.feedback_comportamental,
+    analise_perfil_secundario: secondaryAnalysis.analise_secundario,
+    combinacao_perfis: secondaryAnalysis.combinacao_perfis,
+    influencia_comportamental: secondaryAnalysis.influencia_comportamental
+  }
+}
+
+function generateSecondaryProfileAnalysis(primary: 'D' | 'I' | 'S' | 'C', secondary: 'D' | 'I' | 'S' | 'C', scores: any) {
+  const profileDescriptions = {
+    D: 'Dominância - orientado a resultados, direto e assertivo',
+    I: 'Influência - sociável, otimista e persuasivo',
+    S: 'Estabilidade - paciente, leal e colaborativo',
+    C: 'Conformidade - analítico, preciso e sistemático'
+  }
+
+  const combinationAnalysis = {
+    'D-I': {
+      analise: 'Seu perfil secundário de Influência suaviza sua natureza dominante, tornando-o mais carismático e persuasivo. Você mantém o foco em resultados, mas com uma abordagem mais inspiradora.',
+      combinacao: 'Líder Carismático - Combina determinação com carisma',
+      influencias: [
+        'Liderança inspiradora que motiva equipes através do exemplo',
+        'Capacidade de tomar decisões rápidas mantendo o moral alto',
+        'Comunicação direta mas envolvente em relacionamentos',
+        'Tendência a ser mais sociável em ambientes profissionais'
+      ]
+    },
+    'D-S': {
+      analise: 'Seu perfil secundário de Estabilidade equilibra sua assertividade com paciência e consideração pelos outros. Você é um líder mais acessível e confiável.',
+      combinacao: 'Líder Estável - Combina determinação com confiabilidade',
+      influencias: [
+        'Liderança firme mas respeitosa com os membros da equipe',
+        'Maior paciência em processos e relacionamentos de longo prazo',
+        'Capacidade de manter estabilidade mesmo sob pressão',
+        'Tendência a construir relacionamentos duradouros baseados em confiança'
+      ]
+    },
+    'D-C': {
+      analise: 'Seu perfil secundário de Conformidade adiciona precisão e análise à sua natureza orientada a resultados. Você é um líder que combina ação com planejamento cuidadoso.',
+      combinacao: 'Líder Estratégico - Combina determinação com análise',
+      influencias: [
+        'Decisões rápidas baseadas em análise sólida de dados',
+        'Liderança que valoriza tanto resultados quanto qualidade',
+        'Comunicação direta mas bem fundamentada',
+        'Tendência a estabelecer sistemas e processos eficientes'
+      ]
+    },
+    'I-D': {
+      analise: 'Seu perfil secundário de Dominância adiciona foco e determinação ao seu carisma natural. Você é influente e ao mesmo tempo orientado a resultados.',
+      combinacao: 'Influenciador Determinado - Combina carisma com foco em resultados',
+      influencias: [
+        'Capacidade de inspirar outros enquanto mantém foco nos objetivos',
+        'Comunicação persuasiva com direcionamento claro',
+        'Liderança energética que não perde de vista os resultados',
+        'Relacionamentos calorosos mas com expectativas claras'
+      ]
+    },
+    'I-S': {
+      analise: 'Seu perfil secundário de Estabilidade torna sua influência mais consistente e confiável. Você constrói relacionamentos duradouros através do seu carisma.',
+      combinacao: 'Influenciador Estável - Combina carisma com lealdade',
+      influencias: [
+        'Relacionamentos calorosos e duradouros baseados em confiança',
+        'Capacidade de manter otimismo mesmo em situações difíceis',
+        'Influência positiva que promove harmonia em grupos',
+        'Comunicação entusiástica mas sensível às necessidades dos outros'
+      ]
+    },
+    'I-C': {
+      analise: 'Seu perfil secundário de Conformidade adiciona profundidade e precisão ao seu carisma. Você é influente de forma mais estruturada e fundamentada.',
+      combinacao: 'Influenciador Analítico - Combina carisma com precisão',
+      influencias: [
+        'Persuasão baseada em fatos e análise cuidadosa',
+        'Comunicação entusiástica mas bem estruturada',
+        'Capacidade de influenciar através de argumentos sólidos',
+        'Relacionamentos baseados tanto em conexão emocional quanto intelectual'
+      ]
+    },
+    'S-D': {
+      analise: 'Seu perfil secundário de Dominância adiciona assertividade à sua natureza estável. Você é confiável mas também capaz de tomar decisões firmes quando necessário.',
+      combinacao: 'Estabilizador Assertivo - Combina lealdade com determinação',
+      influencias: [
+        'Liderança calma mas decisiva em momentos críticos',
+        'Capacidade de manter harmonia enquanto direciona resultados',
+        'Relacionamentos baseados em confiança e respeito mútuo',
+        'Tendência a ser o "porto seguro" que também toma iniciativas'
+      ]
+    },
+    'S-I': {
+      analise: 'Seu perfil secundário de Influência adiciona carisma e otimismo à sua natureza estável. Você é uma pessoa confiável que também inspira e motiva outros.',
+      combinacao: 'Estabilizador Inspirador - Combina lealdade com otimismo',
+      influencias: [
+        'Capacidade de manter moral alto da equipe através de apoio constante',
+        'Relacionamentos calorosos baseados em confiança e positividade',
+        'Comunicação gentil mas motivadora',
+        'Tendência a ser o mediador que também eleva o ânimo do grupo'
+      ]
+    },
+    'S-C': {
+      analise: 'Seu perfil secundário de Conformidade adiciona precisão e organização à sua natureza estável. Você é confiável e também meticuloso em suas responsabilidades.',
+      combinacao: 'Estabilizador Sistemático - Combina lealdade com precisão',
+      influencias: [
+        'Confiabilidade excepcional em cumprir compromissos e prazos',
+        'Capacidade de manter estabilidade através de organização',
+        'Relacionamentos baseados em consistência e atenção aos detalhes',
+        'Tendência a ser o "alicerce" que também garante qualidade'
+      ]
+    },
+    'C-D': {
+      analise: 'Seu perfil secundário de Dominância adiciona assertividade e foco em resultados à sua natureza analítica. Você é preciso mas também orientado à ação.',
+      combinacao: 'Analista Determinado - Combina precisão com foco em resultados',
+      influencias: [
+        'Decisões bem fundamentadas tomadas com velocidade adequada',
+        'Liderança baseada em competência técnica e visão clara',
+        'Comunicação precisa mas direcionada a objetivos',
+        'Tendência a ser o especialista que também executa'
+      ]
+    },
+    'C-I': {
+      analise: 'Seu perfil secundário de Influência adiciona carisma e habilidades sociais à sua natureza analítica. Você é preciso mas também capaz de comunicar ideias complexas de forma envolvente.',
+      combinacao: 'Analista Comunicativo - Combina precisão com carisma',
+      influencias: [
+        'Capacidade de explicar conceitos complexos de forma acessível',
+        'Análise cuidadosa combinada com apresentação persuasiva',
+        'Relacionamentos baseados em competência e conexão pessoal',
+        'Tendência a ser o especialista que também inspira confiança'
+      ]
+    },
+    'C-S': {
+      analise: 'Seu perfil secundário de Estabilidade adiciona paciência e colaboração à sua natureza analítica. Você é preciso e também um excelente membro de equipe.',
+      combinacao: 'Analista Colaborativo - Combina precisão com lealdade',
+      influencias: [
+        'Análise cuidadosa realizada com consideração pelo impacto na equipe',
+        'Capacidade de manter altos padrões sem criar conflitos',
+        'Relacionamentos baseados em competência e confiabilidade',
+        'Tendência a ser o especialista que também apoia o desenvolvimento dos outros'
+      ]
+    }
+  }
+
+  const combinationKey = `${primary}-${secondary}` as keyof typeof combinationAnalysis
+  const analysis = combinationAnalysis[combinationKey]
+
+  if (!analysis) {
+    return {
+      analise_secundario: `Seu perfil secundário de ${profileDescriptions[secondary]} complementa suas características principais.`,
+      combinacao_perfis: 'Perfil Único',
+      influencia_comportamental: ['Combinação única de características que influencia seu comportamento de forma particular.']
+    }
+  }
+
+  return {
+    analise_secundario: analysis.analise,
+    combinacao_perfis: analysis.combinacao,
+    influencia_comportamental: analysis.influencias
   }
 }
 
